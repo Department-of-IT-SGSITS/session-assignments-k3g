@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Weather Dashboard</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 40px; background-color: #f4f4f9; color: #333; }
+        h1 { color: #005A9C; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        th, td { padding: 12px 15px; border: 1px solid #ddd; text-align: left; }
+        thead { background-color: #005A9C; color: #fff; }
+        tbody tr:nth-child(even) { background-color: #f9f9f9; }
+        #loading { font-size: 1.2em; color: #777; }
+    </style>
+</head>
+<body>
+    <h1>Live Weather Dashboard - Indore</h1>
+    <p id="loading">Loading historical weather data...</p>
+    <table id="weatherTable">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Temperature (°C)</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+
+<!--   
+    <script>
+    // IMPORTANT: Paste the Invoke URL from your API Gateway here
+    const apiUrl = 'https://fytbx9ya08.execute-api.eu-north-1.amazonaws.com/weather';
+
+    window.onload = function() {
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none'; // Hide loading message
+                const tableBody = document.querySelector("#weatherTable tbody");
+
+                data.forEach(item => {
+                    let row = tableBody.insertRow();
+                    let timestampCell = row.insertCell(0);
+                    let tempCell = row.insertCell(1);
+                    let descCell = row.insertCell(2);
+
+                    // Create a Date object from the UTC timestamp string
+                    let date = new Date(item.timestamp);
+                    
+                    // *** THIS IS THE UPDATED LINE ***
+                    // Format the date to your local time zone (IST)
+                    timestampCell.innerHTML = date.toLocaleString('en-GB', { timeZone: 'Asia/Kolkata' });
+                    
+                    tempCell.innerHTML = item.temperature;
+                    descCell.innerHTML = item.description;
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching weather data:', error);
+                document.getElementById('loading').innerHTML = 'Failed to load weather data. See console for details.';
+            });
+    };
+</script> -->
+
+<script>
+    const apiUrl = 'https://fytbx9ya08.execute-api.eu-north-1.amazonaws.com/weather';
+
+    window.onload = function() {
+        const urlWithCacheBuster = `${apiUrl}?t=${new Date().getTime()}`;
+
+        fetch(urlWithCacheBuster)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                const tableBody = document.querySelector("#weatherTable tbody");
+                tableBody.innerHTML = ''; 
+
+                data.forEach(item => {
+                    let row = tableBody.insertRow();
+                    let timestampCell = row.insertCell(0);
+                    let tempCell = row.insertCell(1);
+                    let descCell = row.insertCell(2);
+
+                    let date = new Date(item.timestamp);
+                    
+                    timestampCell.innerHTML = date.toLocaleString('en-GB', { timeZone: 'Asia/Kolkata' });
+                    tempCell.innerHTML = item.temperature;
+                    descCell.innerHTML = item.weather_description; // <-- THIS LINE IS THE FIX
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching weather data:', error);
+                document.getElementById('loading').innerHTML = 'Failed to load weather data. See console for details.';
+            });
+    };
+</script>
+</body>
+</html>
